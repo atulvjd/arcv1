@@ -10,7 +10,7 @@ from core.config import Config
 from core.events import EventBus
 from core.logger import get_logger
 from core.registry import Registry
-
+from agents.manager import AgentManager
 
 class Kernel:
     """Core runtime kernel."""
@@ -20,6 +20,7 @@ class Kernel:
         self.config = Config()
         self.events = EventBus()
         self.registry = Registry()
+        self.agent_manager = AgentManager()
 
         self._running = False
 
@@ -39,11 +40,12 @@ class Kernel:
         self.registry.register("config", self.config)
         self.registry.register("logger", self.logger)
         self.registry.register("events", self.events)
-
+        self.registry.register("agent_manager", self.agent_manager)
         self.events.emit("kernel.boot")
 
-        self._running = True
 
+        self._running = True
+        self.agent_manager.start_all()
         self.logger.info("Kernel started successfully.")
 
     def shutdown(self) -> None:
@@ -62,3 +64,4 @@ class Kernel:
         self._running = False
 
         self.logger.info("Kernel stopped successfully.")
+        self.agent_manager.stop_all()
