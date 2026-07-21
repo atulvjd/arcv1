@@ -1,0 +1,9 @@
+{
+  "app_name": "ArcV1",
+  "version": "0.1.0",
+  "environment": "development",
+  "debug": true,
+  "log_level": "DEBUG",
+  "host": "127.0.0.1",
+  "port": 8000
+}
