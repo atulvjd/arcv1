@@ -9,7 +9,7 @@ from uuid import uuid4
 
 from agents.base.context import AgentContext
 from agents.base.message import Message
-from agents.base.state import AgentState
+from agents.base.lifecycle import AgentLifecycle
 from agents.base.task import Task
 from core.logger import get_logger
 
@@ -18,6 +18,9 @@ class BaseAgent(ABC):
     """
     Base class for every ArcV1 agent.
     """
+    @property
+    def state(self):
+        return self.lifecycle.state
 
     def __init__(
         self,
@@ -31,26 +34,29 @@ class BaseAgent(ABC):
 
         self.logger = get_logger(name)
 
-        self.state = AgentState.CREATED
+        self.lifecycle = AgentLifecycle()
 
-    def initialize(self) -> None:
+    def initialize(self):
+
         self.logger.info("Initializing...")
 
-        self.state = AgentState.INITIALIZING
+        self.lifecycle.initialize()
 
         self.on_initialize()
 
-        self.state = AgentState.READY
+        self.lifecycle.ready()
 
         self.logger.info("Ready")
 
-    def start(self) -> None:
-        if self.state == AgentState.CREATED:
+    def start(self):
+
+        if self.lifecycle.state.name == "CREATED":
+
             self.initialize()
 
         self.logger.info("Starting...")
 
-        self.state = AgentState.RUNNING
+        self.lifecycle.start()
 
         self.on_start()
 
@@ -59,7 +65,7 @@ class BaseAgent(ABC):
 
         self.on_stop()
 
-        self.state = AgentState.STOPPED
+        self.lifecycle.stop()
 
     def execute(self, task: Task):
         self.logger.info(f"Executing task: {task.name}")
@@ -92,3 +98,4 @@ class BaseAgent(ABC):
     @abstractmethod
     def on_message(self, message: Message):
         pass
+    print(agent.state)
