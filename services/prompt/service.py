@@ -203,24 +203,21 @@ class PromptService(BaseService):
         """
         return self._templates.get(name)
     
-    def render(self, name: str, **kwargs: Any) -> str:
+    def render(self, template_name: str, **kwargs: Any) -> str:
         """
         Retrieve and render a template by name.
         
         Args:
-            name: Template name.
+            template_name: Template name.
             **kwargs: Variables to substitute.
-            
         Returns:
             Rendered template string.
-            
         Raises:
             KeyError: If template not found.
         """
-        template = self.get(name)
+        template = self.get(template_name)
         if template is None:
-            raise KeyError(f"Template '{name}' not found.")
-        
+            raise KeyError(f"Template '{template_name}' not found.")
         return template.render(**kwargs)
     
     def list_templates(self) -> list[str]:
@@ -250,3 +247,4 @@ class PromptService(BaseService):
         base_health = super().health_check()
         base_health["template_count"] = self.count()
         return base_health
+
