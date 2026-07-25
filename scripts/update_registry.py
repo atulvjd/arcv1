@@ -1,4 +1,7 @@
-"""
+"""Helper script to update registry.py"""
+import os
+
+content = '''"""
 ArcV1 Registry
 
 Stores and manages all runtime components.
@@ -60,3 +63,13 @@ class Registry:
 
     def __contains__(self, name: str) -> bool:
         return name in self._items
+'''
+
+# Get the project root
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+file_path = os.path.join(project_root, 'core', 'registry.py')
+
+with open(file_path, 'w') as f:
+    f.write(content)
+
+print(f"Updated {file_path}")
