@@ -98,4 +98,3 @@ class BaseAgent(ABC):
     @abstractmethod
     def on_message(self, message: Message):
         pass
-    print(agent.state)
