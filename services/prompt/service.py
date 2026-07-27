@@ -215,6 +215,7 @@ class PromptService(BaseService):
         Raises:
             KeyError: If template not found.
         """
+        
         template = self.get(template_name)
         if template is None:
             raise KeyError(f"Template '{template_name}' not found.")

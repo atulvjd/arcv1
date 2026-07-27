@@ -20,3 +20,4 @@ runtime.stop()
 print("\nRuntime Status:", runtime.status())
 
 print("\nArcV1 Shutdown Complete")
+print("Registered Agents:", runtime.kernel.agent_manager.count())
