@@ -14,9 +14,8 @@ from core.events import EventBus
 from core.logger import get_logger
 from core.messaging.bus import MessageBus
 from core.messaging.router import MessageRouter
-from core.permissions.context import PermissionContext
 from core.permissions.system import PermissionSystem
-from core.queue import TaskEntry, TaskQueue
+from core.queue import TaskQueue
 from core.registry_manager import RegistryManager
 from core.scheduler.scheduler import Scheduler
 from core.scheduler.hooks import LoggingHook
@@ -162,14 +161,12 @@ class Kernel:
         """Register default tools into ToolService."""
         tool_service = self.services["tool"]
 
-        # Filesystem tool
         allowed_paths = self.config.get("tools.filesystem.allowed_paths", None)
         fs_tool = FilesystemTool(allowed_paths=allowed_paths)
         tool_service.register(fs_tool)
         self.registry.tools.register("filesystem", fs_tool)
         self.logger.info("Registered FilesystemTool.")
 
-        # Terminal tool
         allowed_commands = self.config.get("tools.terminal.allowed_commands", None)
         term_tool = TerminalTool(allowed_commands=allowed_commands)
         tool_service.register(term_tool)
@@ -178,17 +175,13 @@ class Kernel:
 
     def _load_default_model(self) -> None:
         """Load the default model provider."""
-        # Register mock provider (always available)
         mock_provider = MockProvider()
         self.model_registry.register("mock", mock_provider)
-        self.model_registry.register_provider("mock", mock_provider)
 
-        # Load mock as default model
         mock_config = ModelConfig(
             model_id=self.config.get("models.default.model_id", "mock-default"),
-            provider="mock",
-            endpoint=self.config.get("models.default.endpoint", None),
-            api_key=self.config.get("models.default.api_key", None),
+            endpoint=self.config.get("models.default.endpoint", ""),
+            api_key=self.config.get("models.default.api_key", ""),
             parameters=self.config.get("models.default.parameters", {})
         )
         self.model_manager.load_model("mock", mock_config)
@@ -206,31 +199,24 @@ class Kernel:
         self.logger.info("Shutting down ArcV1 Kernel...")
         self.state.set_runtime_state(RuntimeState.SHUTTING_DOWN)
 
-        # Notify subscribers
         self.events.emit("kernel.shutdown")
 
-        # Unload models
         self.model_manager.unload_model()
 
-        # Stop scheduler
         self.scheduler.stop()
 
-        # Stop all agents
         self.agent_manager.stop_all()
 
-        # Stop services in reverse order
         for name in reversed(list(self.services.keys())):
             self.logger.info(f"Stopping service: {name}")
             self.services[name].stop()
 
-        # Clear registries
         self.registry.services.clear()
         self.registry.agents.clear()
         self.registry.tools.clear()
         self.registry.models.clear()
         self.registry.plugins.clear()
 
-        # Clear state
         self.state.clear()
 
         self._running = False
@@ -271,7 +257,3 @@ class Kernel:
             "permissions": self.permissions.health_check(),
             "state": self.state.snapshot(),
         }
-
-
-
-
