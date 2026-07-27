@@ -1,4 +1,18 @@
- ⚠️  Unknown model: "claude-sonnet-4.6", falling back to default model.
-⚠️ **You have run out of usage for atul.sahu025@gmail.com. Please visit https://app.augmentcode.com/account to upgrade.** ⚠️
+"""
+ArcV1 Message Router
 
-Request ID: 355c199b-3ca4-4c14-9e36-d47cfbedb50b
+Intelligent message routing with pattern matching.
+Supports direct, broadcast, topic-based, and request/reply patterns.
+"""
+
+from __future__ import annotations
+
+import threading
+from collections import defaultdict
+from typing import Any, Callable, Optional
+from uuid import uuid4
+
+from agents.base.message import Message
+from core.logger import get_logger
+from core.messaging.bus import MessageBus
+from core.messaging.envelope import MessageEnvelope, MessagePriority
