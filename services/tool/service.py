@@ -27,7 +27,7 @@ class MockTool(BaseTool):
     Mock tool for testing purposes.
 
     Returns a predictable response based on input.
-    Maintains backward compatibility with dict return type.
+    Backward compatible: returns dict (same as pre-ToolResult API).
     """
 
     def __init__(self, name: str = "mock_tool", description: str = "A mock tool for testing") -> None:
@@ -46,7 +46,7 @@ class MockTool(BaseTool):
         super().__init__(metadata)
         self._execution_count = 0
 
-    def execute(self, **kwargs: Any) -> ToolResult:
+    def execute(self, **kwargs: Any) -> Any:
         """
         Execute mock tool.
 
@@ -54,16 +54,14 @@ class MockTool(BaseTool):
             **kwargs: Ignored parameters.
 
         Returns:
-            ToolResult with execution data.
+            Dict with execution data (backward compatible).
         """
         self._execution_count += 1
-        return ToolResult.ok(
-            data={
-                "tool": self.name,
-                "execution_count": self._execution_count,
-                "params": kwargs
-            }
-        )
+        return {
+            "tool": self.name,
+            "execution_count": self._execution_count,
+            "params": kwargs
+        }
 
 
 class ToolService(BaseService):
@@ -170,7 +168,7 @@ class ToolService(BaseService):
         result = tool.execute(**kwargs)
         self.logger.debug(f"Tool '{name}' executed successfully.")
 
-        # Unwrap ToolResult if needed
+        # Unwrap ToolResult for downstream callers
         if isinstance(result, ToolResult):
             return result.data
         return result
