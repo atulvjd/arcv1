@@ -1,4 +1,21 @@
- ⚠️  Unknown model: "claude-sonnet-4.6", falling back to default model.
-⚠️ **You have run out of usage for atul.sahu025@gmail.com. Please visit https://app.augmentcode.com/account to upgrade.** ⚠️
+"""
+ArcV1 Messaging Layer
 
-Request ID: e0344d41-eedd-46b1-96af-eda47534ecea
+Provides decoupled communication between components.
+Agents never call each other directly.
+They communicate through the MessageBus.
+"""
+
+from core.messaging.envelope import MessageEnvelope, MessagePriority
+from core.messaging.middleware import MessageMiddleware
+from core.messaging.bus import MessageBus, Subscription
+from core.messaging.router import MessageRouter
+
+__all__ = [
+    "MessageBus",
+    "MessageEnvelope",
+    "MessagePriority",
+    "MessageMiddleware",
+    "MessageRouter",
+    "Subscription",
+]
