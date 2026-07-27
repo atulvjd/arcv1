@@ -271,3 +271,5 @@ class Kernel:
             "permissions": self.permissions.health_check(),
             "state": self.state.snapshot(),
         }
+
+
